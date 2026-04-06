@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="calculator">
+    <h1>Calculator Server</h1>
+    <label>Number A</label>
+    <input type="number" id="a" placeholder="e.g., 12" step="any">
+
+    <label>Number B</label>
+    <input type="number" id="b" placeholder="e.g., 7" step="any">
+
+    <label>Operation</label>
+    <select id="operation">
+        <option value="add">➕ Addition (a + b)</option>
+        <option value="multiply">✖️ Multiplication (a × b)</option>
+    </select>
+
+    <button id="calculateBtn">Calculate</button>
+
+    <div id="resultBox" class="result">✨ Result will appear here</div>
+    <div id="counterDisplay" class="counter">📊 Total calculations: 0</div>
+</div>
+<footer>POST requests to /calculate (JSON) still work → API mode preserved</footer>
+
+<script>
+    const btn = document.getElementById('calculateBtn');
+    const resultDiv = document.getElementById('resultBox');
+    const counterDisplay = document.getElementById('counterDisplay');
+
+    btn.addEventListener('click', async () => {
+        const a = parseFloat(document.getElementById('a').value);
+        const b = parseFloat(document.getElementById('b').value);
+        const operation = document.getElementById('operation').value;
+
+        if (isNaN(a) || isNaN(b)) {
+            resultDiv.textContent = '❌ Please enter valid numbers';
+            resultDiv.classList.add('error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ a, b, operation })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Something went wrong');
+
+            // Update result and counter from server
+            resultDiv.textContent = `✅ Result: ${data.result}`;
+            resultDiv.classList.remove('error');
+            counterDisplay.textContent = `📊 Total calculations: ${data.count}`;
+        } catch (err) {
+            resultDiv.textContent = `⚠️ Error: ${err.message}`;
+            resultDiv.classList.add('error');
+        }
+    });
+</script>
+</body>
+</html>

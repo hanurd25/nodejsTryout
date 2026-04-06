@@ -1,0 +1,4 @@
+.venv
+.idea
+package.json
+node.js*
