@@ -16,6 +16,19 @@ try {
     process.exit(1);
 }
 
+function serveStaticFile(req, res, contentType) {
+    const fullPath = path.join(__dirname, filepath)
+    try {
+        const content = fs.readFileSync(fullPath, 'utf8');
+        res.writeHead(200, {'Content-Type': contentType});
+        res.end(content);
+    } catch (err) {
+        res.writehead(404);
+        res.end('Not Found');
+    }
+}
+
+
 const server = http.createServer((req, res) => {
     // Increment totalRequests for every request (even non‑/calculate)
     totalRequests++;
